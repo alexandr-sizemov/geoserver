@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Geo Cache</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+	ul,li{margin:0;padding:0;}
+	html, body{
+		margin: 0;
+        padding: 0;
+        height: 100%;
+		font: normal normal 12px/1.7em 'Helvetica Neue', Helvetica, Arial, Sans-serif;
+		color: #555;
+	}
+    #map-canvas {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+		width: 80%;
+		float:left;
+    }
+	#tool-bar{
+		margin-top:15px;
+		padding:0 1%;
+		float:right;
+		border-left:2px solid #eee;
+		width:17%;
+		height: 100%;
+		display:block;
+		background:white;
+	}
+	#move{
+		font-size: 16px;
+		text-transform: uppercase;
+		line-height: 1.5em;
+		border-bottom: 4px solid #444;
+		padding: 0 0 10px 0;
+		margin-bottom: 20px;
+		color: #000;
+	}
+	#friend-list {
+		list-style: none
+		}
+	#friend-list li{
+		background: url(http://themes.i-biyan.com/speak/wp-content/themes/speak/images/bg_ul-li.png) no-repeat left 7px;
+		margin-bottom: 5px;
+		padding-bottom: 5px;
+		padding-left: 15px;
+		border-bottom: 1px solid #eee;
+	}
+	
+    </style>
+	<link rel="stylesheet" id="typeface-css" href="http://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C700%2C300italic&amp;ver=1.0" type="text/css" media="all">
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(
+			function() {
+
+				var map;
+				var markers = [];
+				var i;
+				function initialize() {
+					var mapOptions = {
+						zoom : 14,
+						center : new google.maps.LatLng(45.064, 7.658),
+						mapTypeId : google.maps.MapTypeId.ROADMAP
+					};
+					map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+					marker = new google.maps.Marker({
+						position : new google.maps.LatLng(45.064, 7.658),
+						map : map,
+						title : "A"
+					});
+				}
+				google.maps.event.addDomListener(window, 'load', initialize);
+				var inputData = {
+					userid : "1",
+					deviceid : "1",
+					lat : "45.064",
+					lon : "7.658",
+					accuracy : "1",
+					responseType : "detailed"
+				};
+				var tid = setInterval(repeat, 3000);
+				function repeat() {
+					$.ajax({
+						url : 'update',
+						data : inputData,
+						type : 'post',
+						dataType : 'json',
+						success : function(data) {
+							$('#friend-list').empty();
+							var receivedData = [];
+
+							for ( var j = 0; j < markers.length; j++) {
+								markers[j].setMap(null);
+							}
+							markers = [];
+							i = 0;
+							$.each(data.users, function(index) {
+								$('#friend-list').append('<li>'+data.users[index].id+'</li>');
+								markers[i] = new google.maps.Marker({
+									position : new google.maps.LatLng(
+											data.users[index].lat,
+											data.users[index].lon),
+									map : map,
+									title : data.users[index].id.toString()
+								});
+								i++;
+							});
+							$('#tot-friends').html('('+i+')');
+
+						}
+					});
+					//}); 
+				}
+				
+			});
+	</script>
+
+</head>
+  <body>
+    <div id="map-canvas"></div>
+	<div id="tool-bar">
+		<div id="move"> FRIENDS NEARBY <span id="tot-friends"></span></div>
+		<ul id="friend-list">
+			<li></li>
+		</ul>
+	</div>
+	
+	
+  </body>
+</html>
+

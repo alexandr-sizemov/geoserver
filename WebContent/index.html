@@ -1,0 +1,157 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Geo Cache</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+	ul,li{margin:0;padding:0;}
+	html, body{
+		margin: 0;
+        padding: 0;
+        height: 100%;
+		font: normal normal 12px/1.7em 'Helvetica Neue', Helvetica, Arial, Sans-serif;
+		color: #555;
+	}
+    #map-canvas {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+		width: 100%;
+		float:left;
+    }
+	#tool-bar{
+		margin-top:15px;
+		padding:0 1%;
+		float:right;
+		border-left:2px solid #eee;
+		width:17%;
+		height: 100%;
+		display:block;
+		background:white;
+	}
+	#move{
+		font-size: 16px;
+		text-transform: uppercase;
+		line-height: 1.5em;
+		border-bottom: 4px solid #444;
+		padding: 0 0 10px 0;
+		margin-bottom: 20px;
+		color: #000;
+	}
+	#friend-list {
+		list-style: none
+		}
+	#friend-list li{
+		background: url(http://themes.i-biyan.com/speak/wp-content/themes/speak/images/bg_ul-li.png) no-repeat left 7px;
+		margin-bottom: 5px;
+		padding-bottom: 5px;
+		padding-left: 15px;
+		border-bottom: 1px solid #eee;
+	}
+	
+    </style>
+	<link rel="stylesheet" id="typeface-css" href="http://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C700%2C300italic&amp;ver=1.0" type="text/css" media="all">
+     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>  
+	<script type="text/javascript">
+	$(document).ready(function(){
+
+			var mapOptions = {
+			    zoom: 5,
+			    center: new google.maps.LatLng(41.43805, 12.53402),
+			    mapTypeId: google.maps.MapTypeId.ROADMAP
+			  };
+
+			  var map = new google.maps.Map(document.getElementById('map-canvas'),
+			      mapOptions);
+
+			  map.controls[google.maps.ControlPosition.TOP_CENTER].push(
+			      document.getElementById('info'));
+
+			  
+			  
+			  
+			var inputData = {
+	                userid : "1" ,
+	                deviceid: "1",
+	                lat : "45",
+	                lon : "7",
+	                accuracy : "2000",
+	                responseType : "detailed",
+	                explore : ""
+	                };
+				//var tid = setInterval(repeat, 6000);
+				var polyOptions = {
+									    strokeColor: '#FF0000',
+									    strokeOpacity: 1.0,
+									    strokeWeight: 1,
+									    map: map,
+									  };
+								
+
+				var geodesicOptions = {
+									    strokeColor: '#FF0000',
+									    strokeOpacity: 1.0,
+									    strokeWeight: 1,
+									    geodesic: true,
+									    map: map
+								};
+				function repeat() { 
+					$.ajax({  
+						url:'TestServlet',
+						data: inputData,
+						type:'post',  
+						dataType: 'json',  
+						success: function(data) { 
+							$.each(data, function(index) {
+								
+								var rectangle = new google.maps.Rectangle({
+									    strokeColor: '#FF0000',
+									    strokeOpacity: 0.8,
+									    strokeWeight: 2,
+									    fillColor: '#FF0000',
+									    fillOpacity: Number(data[index].pop),
+									    map: map,
+									    bounds: new google.maps.LatLngBounds(
+									    		new google.maps.LatLng(Number(data[index].lat)-Number(data[index].size), Number(data[index].lon)-Number(data[index].size)),
+									    		new google.maps.LatLng(Number(data[index].lat)+Number(data[index].size), Number(data[index].lon)+Number(data[index].size)))
+								});
+								
+								
+								/*
+								//$('#friend-list').append('<li>'+(Number(data[index].lat)-Number(data[index].size))+' '+ Number(data[index].lon)+'</li>');
+								//$('#friend-list').append('<li>'+(Number(data[index].lat)+Number(data[index].size))+' '+ Number(data[index].lon)+'</li>');
+								
+								var poly = new google.maps.Polyline(polyOptions);
+								var geodesicPoly = new google.maps.Polyline(geodesicOptions);
+								var path = [
+												new google.maps.LatLng(Number(data[index].lat)-Number(data[index].size), Number(data[index].lon)),
+												new google.maps.LatLng(Number(data[index].lat)+Number(data[index].size), Number(data[index].lon))];
+								poly.setPath(path);
+								//geodesicPoly.setPath(path);
+								
+								var poly = new google.maps.Polyline(polyOptions);
+								var geodesicPoly = new google.maps.Polyline(geodesicOptions);
+								var path = [
+												new google.maps.LatLng(Number(data[index].lat), Number(data[index].lon)-Number(data[index].size)),
+												new google.maps.LatLng(Number(data[index].lat), Number(data[index].lon)+Number(data[index].size))];
+								poly.setPath(path);
+								//geodesicPoly.setPath(path);
+								*/
+							});
+						}  
+					});  
+				//}); 
+				}
+	repeat();
+		});  
+	</script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+</html>
+
